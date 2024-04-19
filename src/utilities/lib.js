@@ -1,5 +1,5 @@
 import page from "//unpkg.com/page/page.mjs";
-import { html, render } from '//unpkg.com/lit-html?module';
+import { html, render } from 'https://esm.run/lit-html@1';
 //import { ifDefined } from "//unpkg.com/lit-html/directives/if-defined?module";
 
 /*import page from "./../../node_modules/page/page.mjs";
