@@ -22,7 +22,7 @@ export function renderRegisterPageView(context) {
 
             await register(userData);
             formElement.reset();
-            context.page.redirect('/');
+            context.page.redirect('/browse');
         } catch (error) {
             context.render(registerTemplate(error.message));
         }
@@ -42,7 +42,7 @@ export function renderLoginPageView(context) {
 
             await login(userData);
             formElement.reset();
-            context.page.redirect('/');
+            context.page.redirect('/browse');
         } catch (error) {
             context.render(loginViewTemplate(error.message));
         }
