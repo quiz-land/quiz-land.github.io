@@ -1,7 +1,7 @@
 import { createQuiz, getQuizById } from "../../services/quizesService.js";
 import { quizTopics } from "../../utilities/common.js";
 import { validateQuizData } from "../../utilities/validations.js";
-import { html, ifDefined } from "./../../utilities/lib.js";
+import { html } from "./../../utilities/lib.js";
 import { questionsTemplate } from "./questions.js";
 
 const formId = 'create-form';
