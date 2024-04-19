@@ -3,8 +3,8 @@ import { html } from "../../utilities/lib.js";
 import { validateRegisterUserData } from "../../utilities/validations.js";
 import { login, register } from "../../services/usersServices.js";
 
-const registerFormId = 'registerForm';
-const loginFormId = 'loginForm';
+const registerFormId = 'register-form';
+const loginFormId = 'login-form';
 
 export function renderRegisterPageView(context) {
     context.render(registerTemplate());

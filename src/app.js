@@ -14,5 +14,6 @@ page('/register', renderRegisterPageView);
 page('/login', renderLoginPageView);
 page('/browse', renderBrowseView);
 page('/create', renderEditorView);
+page('/edit/:id', renderEditorView);
 
 page.start();

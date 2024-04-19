@@ -18,9 +18,13 @@ export function validateRegisterUserData(userData) {
     }
 }
 
-export function validateLoginUserData(userData) {
-    if (userData.email === '' || userData.password === '') {
-        throw new Error('All fields are required.');
+export function validateQuizData(quizData) {
+    if (quizData.title === '') {
+        throw new Error('The title is required.');
+    }
+
+    if (quizData.topic === 'all') {
+        throw new Error('Please, select topic.');
     }
 }
 
