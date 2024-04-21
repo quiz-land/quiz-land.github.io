@@ -7,6 +7,11 @@ export async function getQuizById(id) {
     return api.get(`${endpoint}/${id}`);
 }
 
+export async function editQuizData(id, data) {
+    const quizData = Object.assign({ creator: addCreatorData() }, data);
+    return api.put(`${endpoint}/${id}`, quizData);
+}
+
 export async function createQuiz(data) {
     const quizData = Object.assign({ creator: addCreatorData() }, data);
     return api.post(endpoint, quizData);

@@ -1,4 +1,4 @@
-import { createQuiz, getQuizById } from "../../services/quizesService.js";
+import { createQuiz, editQuizData, getQuizById } from "../../services/quizesService.js";
 import { quizTopics } from "../../utilities/common.js";
 import { validateQuizData } from "../../utilities/validations.js";
 import { html } from "./../../utilities/lib.js";
@@ -27,11 +27,14 @@ export async function renderEditorView(context) {
                 description: data.description,
             };
             
-            const response = await createQuiz(quizData);
+            const response = quizId
+                ? await editQuizData(quizId, quizData)
+                : await createQuiz(quizData);
+            
             formElement.reset();
-            context.page.redirect(`/edit/${response.objectId}`);
+            context.page.redirect(`/edit/${quizId || response.objectId}`);
         } catch (error) {
-            context.render(editorTemplate(quizId, error.message));
+            context.render(editorTemplate(quizData, error.message));
         }
     }
 }
