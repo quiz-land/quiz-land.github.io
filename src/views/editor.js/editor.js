@@ -1,22 +1,27 @@
+import { getQuestionsByQuizId } from "../../services/questionsService.js";
 import { createQuiz, editQuizData, getQuizById } from "../../services/quizesService.js";
 import { quizTopics } from "../../utilities/common.js";
 import { validateQuizData } from "../../utilities/validations.js";
 import { html, render } from "./../../utilities/lib.js";
-import { questionsTemplate } from "./questions.js";
+import { renderQuestionsTemplate } from "./questions.js";
 
 const formId = 'create-form';
 
 export async function renderEditorView(context) {
     const quizId = context.params.id;
     let quizData = null;
+    let questionsData = [];
 
     if (quizId) {
-        quizData = await getQuizById(quizId);
+        [ quizData, questionsData ] = await Promise.all([
+            getQuizById(quizId),
+            getQuestionsByQuizId(quizId),
+        ]);
     }
-
+    
     const updateFormDivElement = createFormDivElement();
 
-    context.render(editorTemplate(quizData, updateFormDivElement(quizData)));
+    context.render(editorTemplate(quizData, updateFormDivElement(quizData), questionsData));
     context.registerForm(formId, onSave);
 
     async function onSave(data) {
@@ -54,7 +59,7 @@ function createFormDivElement() {
     return updateFormDivElement;
 }
 
-const editorTemplate = (quizData, formDivElement) => html`
+const editorTemplate = (quizData, formDivElement, questionsData) => html`
     <section id="editor">
 
         <header class="pad-large">
@@ -63,7 +68,7 @@ const editorTemplate = (quizData, formDivElement) => html`
 
         ${formDivElement}
 
-        ${quizData ? questionsTemplate() : ''}
+        ${quizData ? renderQuestionsTemplate(questionsData) : ''}
 
     </section>`;
 

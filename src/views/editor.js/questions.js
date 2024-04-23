@@ -1,157 +1,115 @@
-import { html } from "../../utilities/lib.js";
+import { html, render } from "../../utilities/lib.js";
+import { renderAnswersTemplate } from "./answers.js";
 
-export const questionsTemplate = () => html`
+let questionsData = [];
+const updateQuestionsDivElement = createQuestionsDivElement();
+
+export function renderQuestionsTemplate(inputQuestionsData) {
+    questionsData = inputQuestionsData;
+
+    return questionsTemplate(updateQuestionsDivElement());
+}
+
+function onCreate() {
+    questionsData.push({ answers: ["", ""], isEditorInvoked: true });
+    updateQuestionsDivElement();
+}
+
+function onEdit(questionId) {
+    const questionData = questionsData.find(qd => qd.objectId === questionId);
+    
+    if (questionData) {
+        questionData.isEditorInvoked = true;
+        updateQuestionsDivElement();
+    }
+}
+
+function onCancel(questionId) {
+    const questionIndex = questionsData.findIndex(qd => qd.objectId === questionId);
+
+    if (questionIndex !== -1) {
+        if (questionId) {
+            questionsData[questionIndex].isEditorInvoked = false;
+        } else {
+            questionsData.splice(questionIndex, 1);
+        }
+        
+        updateQuestionsDivElement();
+    }
+}
+
+function createQuestionsDivElement() {
+    const questionsContainerDivElement = document.createElement('div');
+    questionsContainerDivElement.className = 'pad-large alt-page';
+
+    function updateQuestionsDivElement() {
+        const qs = questionsData.map((qd, i) => {
+            const q = qd.isEditorInvoked ? questionEditTemplate(qd, i) : questionPreviewTemplate(qd, i);
+            return q;
+        });
+        
+        render(html`
+                    ${qs}
+
+                    <article class="editor-question">
+                        <div class="editor-input">
+                            <button class="input submit action" @click=${onCreate}>
+                                <i class="fas fa-plus-circle"></i>
+                                Add question
+                            </button>
+                        </div>
+                    </article>`, questionsContainerDivElement);
+
+        return questionsContainerDivElement;
+    }
+
+    return updateQuestionsDivElement;
+}
+
+export const questionsTemplate = (questionsContainerDivElement) => html`
     <header class="pad-large">
         <h2>Questions</h2>
     </header>
 
-    <div class="pad-large alt-page">
+    ${questionsContainerDivElement}
+`;
 
-        <article class="editor-question">
-            <div class="layout">
-                <div class="question-control">
-                    <button class="input submit action"><i class="fas fa-check-double"></i>
-                        Save</button>
-                    <button class="input submit action"><i class="fas fa-times"></i> Cancel</button>
-                </div>
-                <h3>Question 1</h3>
+const questionEditTemplate = (questionData, index) => html`
+    <article class="editor-question">
+        <div class="layout">
+            <div class="question-control">
+                <button class="input submit action"><i class="fas fa-check-double"></i>
+                    Save</button>
+                <button class="input submit action" @click=${onCancel.bind(null, questionData.objectId)}><i class="fas fa-times"></i> Cancel</button>
             </div>
-            <form>
-                <textarea class="input editor-input editor-text" name="text"
-                    placeholder="Enter question"></textarea>
-                <div class="editor-input">
+            <h3>Question ${index + 1}</h3>
+        </div>
+        <form>
+            <textarea class="input editor-input editor-text" name="text" .value=${questionData.text || ""} placeholder=${questionData.text ? "" : "Enter question"}></textarea>
+            
+            ${questionData.answers && renderAnswersTemplate(questionData.answers, questionData.isEditorInvoked, index, questionData.correctIndex)}
 
-                    <label class="radio">
-                        <input class="input" type="radio" name="question-1" value="0" />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-
-                    <input class="input" type="text" name="answer-0" />
-                    <button class="input submit action"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="editor-input">
-
-                    <label class="radio">
-                        <input class="input" type="radio" name="question-1" value="1" />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-
-                    <input class="input" type="text" name="answer-1" />
-                    <button class="input submit action"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="editor-input">
-
-                    <label class="radio">
-                        <input class="input" type="radio" name="question-1" value="2" />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-
-                    <input class="input" type="text" name="answer-2" />
-                    <button class="input submit action"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="editor-input">
-                    <button class="input submit action">
-                        <i class="fas fa-plus-circle"></i>
-                        Add answer
-                    </button>
-                </div>
-            </form>
-        </article>
-
-        <article class="editor-question">
-            <div class="layout">
-                <div class="question-control">
-                    <button disabled class="input submit action"><i class="fas fa-check-double"></i>
-                        Save</button>
-                    <button disabled class="input submit action"><i class="fas fa-times"></i>
-                        Cancel</button>
-                </div>
-                <h3>Question 1</h3>
-            </div>
-            <form>
-                <textarea disabled class="input editor-input editor-text" name="text"
-                    placeholder="Enter question"></textarea>
-                <div class="editor-input">
-
-                    <label class="radio">
-                        <input disabled class="input" type="radio" name="question-1" value="0" />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-
-                    <input disabled class="input" type="text" name="answer-0" />
-                    <button disabled class="input submit action"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="editor-input">
-
-                    <label class="radio">
-                        <input disabled class="input" type="radio" name="question-1" value="1" />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-
-                    <input disabled class="input" type="text" name="answer-1" />
-                    <button disabled class="input submit action"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="editor-input">
-
-                    <label class="radio">
-                        <input disabled class="input" type="radio" name="question-1" value="2" />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-
-                    <input disabled class="input" type="text" name="answer-2" />
-                    <button disabled class="input submit action"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="editor-input">
-                    <button disabled class="input submit action">
-                        <i class="fas fa-plus-circle"></i>
-                        Add answer
-                    </button>
-                </div>
-            </form>
-            <div class="loading-overlay working"></div>
-        </article>
-
-        <article class="editor-question">
-            <div class="layout">
-                <div class="question-control">
-                    <button class="input submit action"><i class="fas fa-edit"></i> Edit</button>
-                    <button class="input submit action"><i class="fas fa-trash-alt"></i> Delete</button>
-                </div>
-                <h3>Question 2</h3>
-            </div>
-            <form>
-                <p class="editor-input">This is the second question.</p>
-                <div class="editor-input">
-                    <label class="radio">
-                        <input class="input" type="radio" name="question-2" value="0" disabled />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-                    <span>Answer 0</span>
-                </div>
-                <div class="editor-input">
-                    <label class="radio">
-                        <input class="input" type="radio" name="question-2" value="1" disabled />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-                    <span>Answer 1</span>
-                </div>
-                <div class="editor-input">
-                    <label class="radio">
-                        <input class="input" type="radio" name="question-2" value="2" disabled />
-                        <i class="fas fa-check-circle"></i>
-                    </label>
-                    <span>Answer 2</span>
-                </div>
-            </form>
-        </article>
-
-        <article class="editor-question">
             <div class="editor-input">
                 <button class="input submit action">
                     <i class="fas fa-plus-circle"></i>
-                    Add question
+                    Add answer
                 </button>
             </div>
-        </article>
+        </form>
+    </article>`;
 
-    </div>`;
+const questionPreviewTemplate = (questionData, index) => html`
+    <article class="editor-question">
+        <div class="layout">
+            <div class="question-control">
+                <button class="input submit action" @click=${onEdit.bind(null, questionData.objectId)}><i class="fas fa-edit"></i> Edit</button>
+                <button class="input submit action"><i class="fas fa-trash-alt"></i> Delete</button>
+            </div>
+            <h3>Question ${index + 1}</h3>
+        </div>
+        <form>
+            <p class="editor-input">${questionData.text}</p>
+            
+            ${renderAnswersTemplate(questionData.answers, questionData.isEditorInvoked, index, questionData.correctIndex)}
+        </form>
+    </article>`;
