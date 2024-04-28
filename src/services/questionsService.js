@@ -9,21 +9,27 @@ export async function getQuestionsByQuizId(quizId) {
     return response.results;
 }
 
-export async function editQuestionData(id, data) {
-    const questionData = assembleQuizData(data);
-    return api.put(`${endpoint}/${id}`, questionData);
-}
-
-export async function createQuestion(data) {
-    const questionData = assembleQuizData(data);
+export async function createQuestion(quizId, data) {
+    const questionData = assembleQuizData(quizId, data);
     return api.post(endpoint, questionData);
 }
 
-function assembleQuizData(data) {
+export async function editQuestionData(quizId, id, data) {
+    const questionData = assembleQuizData(quizId, data);
+    return api.put(`${endpoint}/${id}`, questionData);
+}
+
+export async function deleteQuestionData(id) {
+    return api.del(`${endpoint}/${id}`);
+}
+
+function assembleQuizData(quizId, data) {
+    const loggedInUserData = auth.getLoggedInUserData();
+
     return Object.assign(
         {
-            quiz: addPointerData('Quiz', data.quizId),
-            creator: addPointerData('_User', auth.getLoggedInUserData()),
+            quiz: addPointerData('Quiz', quizId),
+            creator: addPointerData('_User', loggedInUserData.id),
         },
         data
     );

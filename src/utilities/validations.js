@@ -28,8 +28,20 @@ export function validateQuizData(quizData) {
     }
 }
 
-export function validateSolutionData(solutionData) {
-    if (solutionData.some(sd => sd === '')) {
-        throw new Error('All fields are required.');
+export function validateQuestionData(questionData) {
+    if (questionData.text === '') {
+        throw new Error('Please, enter a question.');
+    }
+
+    if (questionData.answers.length < 2) {
+        throw new Error('Please, enter at least 2 answers.');
+    }
+
+    if (questionData.answers.some(a => a === '')) {
+        throw new Error('The question shouldn\'t contain empty answer/s.');
+    }
+    
+    if (questionData.correctIndex === undefined) {
+        throw new Error('Please, select a correct answer.');
     }
 }

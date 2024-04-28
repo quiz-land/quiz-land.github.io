@@ -21,7 +21,7 @@ export async function renderEditorView(context) {
     
     const updateFormDivElement = createFormDivElement();
 
-    context.render(editorTemplate(quizData, updateFormDivElement(quizData), questionsData));
+    context.render(editorTemplate(quizData, updateFormDivElement(quizData), quizId, questionsData));
     context.registerForm(formId, onSave);
 
     async function onSave(data) {
@@ -59,7 +59,7 @@ function createFormDivElement() {
     return updateFormDivElement;
 }
 
-const editorTemplate = (quizData, formDivElement, questionsData) => html`
+const editorTemplate = (quizData, formDivElement, quizId, questionsData) => html`
     <section id="editor">
 
         <header class="pad-large">
@@ -68,7 +68,7 @@ const editorTemplate = (quizData, formDivElement, questionsData) => html`
 
         ${formDivElement}
 
-        ${quizData ? renderQuestionsTemplate(questionsData) : ''}
+        ${quizData ? renderQuestionsTemplate(quizId, questionsData) : ''}
 
     </section>`;
 
@@ -85,8 +85,7 @@ const formTemplate = (quizData, errorMessage, isDisabled) => html`
             <span class="label-col">Topic:</span>
             <select class="input i-med" name="topic" ?disabled=${isDisabled}>
                 <option value="all" ?selected=${quizData}>-- Select category</option>
-                ${Object.entries(quizTopics)
-        .map(([k, v]) => html`<option value=${k} ?selected=${quizData?.topic === k}>${v}</option>`)}
+                ${Object.entries(quizTopics).map(([k, v]) => html`<option value=${k} ?selected=${quizData?.topic === k}>${v}</option>`)}
             </select>
         </label><label class="editor-label layout">
             <span class="label-col">Desciption:</span>
