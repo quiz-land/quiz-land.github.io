@@ -41,7 +41,7 @@ export function validateQuestionData(questionData) {
         throw new Error('The question shouldn\'t contain empty answer/s.');
     }
     
-    if (questionData.correctIndex === undefined) {
+    if (questionData.correctIndex === undefined || questionData.correctIndex === null) {
         throw new Error('Please, select a correct answer.');
     }
 }
