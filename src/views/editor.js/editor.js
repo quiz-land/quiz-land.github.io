@@ -1,10 +1,12 @@
-import { getQuestionsByQuizId } from "../../services/questionsService.js";
+import { html, render } from "./../../utilities/lib.js";
+
 import { createQuiz, editQuizData, getQuizById } from "../../services/quizesService.js";
+import { getQuestionsByQuizId } from "../../services/questionsService.js";
 import { quizTopics } from "../../utilities/common.js";
 import { validateQuizData } from "../../utilities/validations.js";
-import { html, render } from "./../../utilities/lib.js";
-import { renderQuestionsTemplate } from "./questions.js";
+import { renderQuestionsTemplate } from "./questions/questions.js";
 
+const updateFormDivElement = createFormDivElement();
 const formId = 'create-form';
 
 export async function renderEditorView(context) {
@@ -18,17 +20,15 @@ export async function renderEditorView(context) {
             getQuestionsByQuizId(quizId),
         ]);
     }
-    
-    const updateFormDivElement = createFormDivElement();
 
-    context.render(editorTemplate(quizData, updateFormDivElement(quizData), quizId, questionsData));
+    context.render(editorTemplate(quizId, quizData, questionsData));
     context.registerForm(formId, onSave);
 
     async function onSave(data) {
         try {
             validateQuizData(data);
 
-            updateFormDivElement(data, '', true);
+            updateFormDivElement(quizId, data, '', true);
 
             const quizData = {
                 title: data.title,
@@ -36,13 +36,15 @@ export async function renderEditorView(context) {
                 description: data.description,
             };
 
-            const response = quizId
-                ? await editQuizData(quizId, quizData)
-                : await createQuiz(quizData);
-
-            context.page.redirect(`/edit/${quizId || response.objectId}`);
+            if (quizId === undefined) {
+                const response = await createQuiz(quizData);
+                context.page.redirect(`/edit/${response.objectId}`);
+            } else {
+                await editQuizData(quizId, quizData);
+                updateFormDivElement(quizId, quizData);
+            }
         } catch (error) {
-            updateFormDivElement(data, error.message);
+            updateFormDivElement(quizId, data, error.message);
         }
     }
 }
@@ -51,28 +53,28 @@ function createFormDivElement() {
     const formDivElement = document.createElement('div');
     formDivElement.className = 'pad-large alt-page';
 
-    function updateFormDivElement(quizData, errorMessage, isDisabled) {
-        render(formTemplate(quizData, errorMessage, isDisabled), formDivElement);
+    function updateFormDivElement(quizId, quizData, errorMessage, isDisabled) {
+        render(formTemplate(quizId, quizData, errorMessage, isDisabled), formDivElement);
         return formDivElement;
     }
 
     return updateFormDivElement;
 }
 
-const editorTemplate = (quizData, formDivElement, quizId, questionsData) => html`
+const editorTemplate = (quizId, quizData, questionsData) => html`
     <section id="editor">
 
         <header class="pad-large">
             <h1>${quizData ? "Edit" : "New"} quiz</h1>
         </header>
 
-        ${formDivElement}
+        ${updateFormDivElement(quizId, quizData)}
 
         ${quizData ? renderQuestionsTemplate(quizId, questionsData) : ''}
 
     </section>`;
 
-const formTemplate = (quizData, errorMessage, isDisabled) => html`
+const formTemplate = (quizId, quizData, errorMessage, isDisabled) => html`
     <form id=${formId}>
         <p class="notification">
             ${errorMessage || ''}
@@ -91,5 +93,5 @@ const formTemplate = (quizData, errorMessage, isDisabled) => html`
             <span class="label-col">Desciption:</span>
             <textarea class="input i-med" type="text" name="description" .value=${quizData ? quizData.description : ""} ?disabled=${isDisabled}></textarea>
         </label>
-        <input class="input submit action" type="submit" value=${quizData ? "Edit" : "Save"} ?disabled=${isDisabled}>
+        <input class="input submit action" type="submit" value=${quizId ? "Edit" : "Save"} ?disabled=${isDisabled}>
     </form>`;

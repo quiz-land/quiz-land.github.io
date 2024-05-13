@@ -23,14 +23,14 @@ export function renderAnswersTemplate(questionData, questionIndex) {
         const answerIndex = Number(clickedElement.closest('button[data-index]')?.dataset.index);
 
         if (isNaN(answerIndex) === false) {
-            let correctIndex = questionData.correctIndex;
-            correctIndex = correctIndex > answerIndex
-                ? correctIndex - 1
-                : correctIndex === answerIndex
+            let tempCorrectIndex = questionData.tempCorrectIndex;
+            tempCorrectIndex = tempCorrectIndex > answerIndex
+                ? tempCorrectIndex - 1
+                : tempCorrectIndex === answerIndex
                     ? null
-                    : correctIndex;
+                    : tempCorrectIndex;
 
-            questionData.correctIndex = correctIndex;
+            questionData.tempCorrectIndex = tempCorrectIndex;
             questionData.tempAnswers.splice(answerIndex, 1);
 
             updateAnswersDivElement();
@@ -41,7 +41,7 @@ export function renderAnswersTemplate(questionData, questionIndex) {
 const answersContainerTemplate = (questionData, questionIndex, createHandler) => html`
     ${questionData.isEditorInvoked
         ? html`
-            ${questionData.tempAnswers.map((ad, i) => answerEditTemplate(questionData, questionIndex, i, ad))}
+            ${questionData.tempAnswers.map((ad, i) => answerEditTemplate(questionIndex, i, i === questionData.tempCorrectIndex, ad))}
 
             <div class="editor-input">
                 <button class="input submit action" @click=${createHandler}>
@@ -49,22 +49,22 @@ const answersContainerTemplate = (questionData, questionIndex, createHandler) =>
                     Add answer
                 </button>
             </div>`
-        : questionData.answers.map((ad, i) => answerPreviewTemplate(questionData, questionIndex, i, ad))}`;
+        : questionData.answers.map((ad, i) => answerPreviewTemplate(questionIndex, i, i === questionData.correctIndex, ad))}`;
 
-const answerEditTemplate = (questionData, questionIndex, answerIndex, answer) => html`
+const answerEditTemplate = (questionIndex, answerIndex, isChecked, answer) => html`
     <div class="editor-input">
         <label class="radio">
-            <input class="input" type="radio" name="question-${questionIndex}" value=${answerIndex} ?checked=${answerIndex === questionData.correctIndex} />
+            <input class="input" type="radio" name="question-${questionIndex}" value=${answerIndex} ?checked=${isChecked} />
             <i class="fas fa-check-circle"></i>
         </label>
         <input class="input" type="text" name="answer-${answerIndex}" .value=${answer || ''} placeholder=${answer ? "" : "Enter anwer"}>
         <button class="input submit action" data-index=${answerIndex}><i class="fas fa-trash-alt"></i></button>
     </div>`;
 
-const answerPreviewTemplate = (questionData, questionIndex, answerIndex, answer) => html`
+const answerPreviewTemplate = (questionIndex, answerIndex, isChecked, answer) => html`
     <div class="editor-input">
         <label class="radio">
-            <input class="input" type="radio" name="question-${questionIndex}" value=${answerIndex} ?checked=${answerIndex === questionData.correctIndex} disabled />
+            <input class="input" type="radio" name="question-${questionIndex}" value=${answerIndex} ?checked=${isChecked} disabled />
             <i class="fas fa-check-circle"></i>
         </label>
         <span>${answer}</span>
