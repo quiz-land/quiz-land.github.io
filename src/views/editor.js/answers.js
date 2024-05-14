@@ -38,10 +38,10 @@ export function renderAnswersTemplate(questionData, questionIndex) {
     }
 }
 
-const answersContainerTemplate = (questionData, questionIndex, createHandler) => html`
+const answersContainerTemplate = (questionData, questionIndex, createHandler, deleteHandler) => html`
     ${questionData.isEditorInvoked
         ? html`
-            ${questionData.tempAnswers.map((ad, i) => answerEditTemplate(questionIndex, i, i === questionData.tempCorrectIndex, ad))}
+            ${questionData.tempAnswers.map((ad, i) => answerEditTemplate(questionIndex, i, i === questionData.tempCorrectIndex, ad, deleteHandler))}
 
             <div class="editor-input">
                 <button class="input submit action" @click=${createHandler}>
@@ -54,7 +54,7 @@ const answersContainerTemplate = (questionData, questionIndex, createHandler) =>
 const answerEditTemplate = (questionIndex, answerIndex, isChecked, answer) => html`
     <div class="editor-input">
         <label class="radio">
-            <input class="input" type="radio" name="question-${questionIndex}" value=${answerIndex} ?checked=${isChecked} />
+            <input class="input" type="radio" name="question-${questionIndex}" value=${answerIndex} .checked=${isChecked} />
             <i class="fas fa-check-circle"></i>
         </label>
         <input class="input" type="text" name="answer-${answerIndex}" .value=${answer || ''} placeholder=${answer ? "" : "Enter anwer"}>

@@ -32,7 +32,12 @@ const questionEditTemplate = (questionData, index, updateQuestionTemplateHandler
     </div>
     <div @change=${(event) => onChange(event, questionData)}>
         <p class="notification">${questionData.errorMessage || ''}</p>
-        <textarea class="input editor-input editor-text" name="text" .value=${questionData.tempText || ""} placeholder=${questionData.tempText ? "" : "Enter question"}></textarea>
+        <textarea
+            class="input editor-input editor-text"
+            name="text"
+            .value=${questionData.tempText || ""}
+            placeholder=${questionData.tempText ? "" : "Enter question"}
+        ></textarea>
         ${renderAnswersTemplate(questionData, index)}
 </div>
     ${isDisabled ? html`<div class="loading-overlay working"></div>` : ""}`;
