@@ -3,6 +3,12 @@ import { auth } from '../utilities/auth.js';
 
 const endpoint = '/classes/Quiz';
 
+export async function getQuizesCount() {
+    const queryString = JSON.stringify({ questionsCount: { "$gt": 0 } });
+    const response = await api.get(`${endpoint}?where=${queryString}&count=1`);
+    return response.count;
+}
+
 export async function getQuizesData() {
     return api.get(endpoint);
 }

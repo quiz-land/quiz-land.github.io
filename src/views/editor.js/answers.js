@@ -24,6 +24,7 @@ export function renderAnswersTemplate(questionData, questionIndex) {
 
         if (isNaN(answerIndex) === false) {
             let tempCorrectIndex = questionData.tempCorrectIndex;
+            
             tempCorrectIndex = tempCorrectIndex > answerIndex
                 ? tempCorrectIndex - 1
                 : tempCorrectIndex === answerIndex
@@ -33,7 +34,7 @@ export function renderAnswersTemplate(questionData, questionIndex) {
             questionData.tempCorrectIndex = tempCorrectIndex;
             questionData.tempAnswers.splice(answerIndex, 1);
 
-            updateAnswersDivElement();
+            answersContainerDivElement.replaceWith(renderAnswersTemplate(questionData, questionIndex));
         }
     }
 }
@@ -57,7 +58,10 @@ const answerEditTemplate = (questionIndex, answerIndex, isChecked, answer) => ht
             <input class="input" type="radio" name="question-${questionIndex}" value=${answerIndex} .checked=${isChecked} />
             <i class="fas fa-check-circle"></i>
         </label>
-        <input class="input" type="text" name="answer-${answerIndex}" .value=${answer || ''} placeholder=${answer ? "" : "Enter anwer"}>
+        ${answer
+        ? html`<input class="input" type="text" name="answer-${answerIndex}" .value=${answer}>`
+        : html`<input class="input" type="text" name="answer-${answerIndex}" placeholder="Enter anwer">`
+    }
         <button class="input submit action" data-index=${answerIndex}><i class="fas fa-trash-alt"></i></button>
     </div>`;
 

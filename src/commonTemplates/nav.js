@@ -1,6 +1,6 @@
-import { html } from "../../utilities/lib.js";
+import { html } from "../utilities/lib.js";
 
-import { logout } from "../../services/usersServices.js";
+import { logout } from "../services/usersServices.js";
 
 export const navigationTemplate = (hasLoggedInUser, page) => html`
     <header id="titlebar">

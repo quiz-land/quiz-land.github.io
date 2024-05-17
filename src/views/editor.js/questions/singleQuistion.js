@@ -2,7 +2,8 @@ import { html, render } from "../../../utilities/lib.js";
 
 import { renderAnswersTemplate } from "../answers.js";
 import { onCancel, onChange, onDelete, onEdit, onSave } from "../editorFunctionalities.js";
-import { confirmActionTemplate } from "../../notifications.js";
+import { renderNotificationTemplate } from "../../../commonTemplates/notifications.js";
+import { loadingOverlayTemplate } from "../../../commonTemplates/loaders.js";
 
 export function renderQuestionTemplate(questionData, index) {
     const questionArticleElement = document.createElement('article');
@@ -40,7 +41,7 @@ const questionEditTemplate = (questionData, index, updateQuestionTemplateHandler
         ></textarea>
         ${renderAnswersTemplate(questionData, index)}
 </div>
-    ${isDisabled ? html`<div class="loading-overlay working"></div>` : ""}`;
+    ${isDisabled ? loadingOverlayTemplate() : ""}`;
 
 function questionPreviewTemplate(questionData, index, updateQuestionTemplateHandler) {
     const deleteHandler = onDelete(questionData, index, updateQuestionTemplateHandler);
@@ -56,6 +57,6 @@ function questionPreviewTemplate(questionData, index, updateQuestionTemplateHand
         <form>
             <p class="editor-input">${questionData.text}</p>
             ${renderAnswersTemplate(questionData, index)}
-            ${questionData.wantToDelete ? confirmActionTemplate(index, deleteHandler.onAgree, deleteHandler.onRefuse) : ""}
+            ${questionData.wantToDelete ? renderNotificationTemplate(index, deleteHandler.onAgree, deleteHandler.onRefuse) : ""}
         </form>`
-        };
+};

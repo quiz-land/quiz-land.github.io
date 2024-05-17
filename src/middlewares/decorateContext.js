@@ -1,23 +1,27 @@
 import { render } from "./../utilities/lib.js";
 
-import { layoutTemplate } from "./../views/layout/layoutView.js";
-import { navigationTemplate } from "./../views/layout/nav.js";
+import { navigationTemplate } from "../commonTemplates/nav.js";
 import { auth } from "./../utilities/auth.js";
 
 const formsHandles = {};
 
-const bodyElement = document.body;
+const headerElement = document.querySelector('header');
+const mainElement = document.querySelector('main');
 
 export function decorateContext(context, next) {
-    const hasLoggedInUser = auth.hasLoggedInUser();
-
-    context.render = (currentTemplate) => render(layoutTemplate(navigationTemplate(hasLoggedInUser, context.page), currentTemplate), bodyElement);
+    renderNavgation(context.page);
+    context.render = (currentTemplate) => render(currentTemplate, mainElement);
     context.registerForm = (formId, handler) => formsHandles[formId] = handler;
 
     next();
 }
 
-bodyElement.addEventListener('submit', (event) => {
+function renderNavgation(page) {
+    const hasLoggedInUser = auth.hasLoggedInUser();
+    render(navigationTemplate(hasLoggedInUser, page), headerElement);
+}
+
+mainElement.addEventListener('submit', (event) => {
     event.preventDefault();
     
     const formElement = event.target;

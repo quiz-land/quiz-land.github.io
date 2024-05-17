@@ -1,7 +1,7 @@
-import { html, render } from "../../utilities/lib.js";
+import { html, render } from "../utilities/lib.js";
 
-import { validateRegisterUserData } from "../../utilities/validations.js";
-import { login, register } from "../../services/usersServices.js";
+import { validateRegisterUserData } from "../utilities/validations.js";
+import { login, register } from "../services/usersServices.js";
 
 const updateFormDivElement = createFormDivElement();
 

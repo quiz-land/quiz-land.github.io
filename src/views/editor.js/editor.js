@@ -21,7 +21,7 @@ export async function renderEditorView(context) {
         ]);
     }
 
-    context.render(editorTemplate(quizId, quizData, questionsData));
+    context.render(editorTemplate(quizId, quizData, questionsData, onUpdateQuetionsCount));
     context.registerForm(formId, onSave);
 
     async function onSave(data) {
@@ -47,6 +47,14 @@ export async function renderEditorView(context) {
             updateFormDivElement(quizId, data, error.message);
         }
     }
+
+    async function onUpdateQuetionsCount() {
+        try {
+            await editQuizData(quizId, { questionsCount: questionsData.length });
+        } catch (error) {
+            alert(error.message);
+        }
+    }
 }
 
 function createFormDivElement() {
@@ -61,7 +69,7 @@ function createFormDivElement() {
     return updateFormDivElement;
 }
 
-const editorTemplate = (quizId, quizData, questionsData) => html`
+const editorTemplate = (quizId, quizData, questionsData, updateQuetionsCountHandler) => html`
     <section id="editor">
 
         <header class="pad-large">
@@ -70,7 +78,7 @@ const editorTemplate = (quizId, quizData, questionsData) => html`
 
         ${updateFormDivElement(quizId, quizData)}
 
-        ${quizData ? renderQuestionsTemplate(quizId, questionsData) : ''}
+        ${quizData ? renderQuestionsTemplate(quizId, questionsData, updateQuetionsCountHandler) : ''}
 
     </section>`;
 

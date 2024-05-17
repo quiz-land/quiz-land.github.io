@@ -4,12 +4,13 @@ import { validateQuestionData } from "../../utilities/validations.js";
 export const quizInfo = {
     quizId: null,
     questionsData: [],
-    updateQuestionsTemplateHandler: null,
+    onUpdateQuestionsTemplate: null,
+    onUpdateQuestionsCount: null,
 };
 
 export function onCreate() {
     quizInfo.questionsData.push({ tempText: "", tempAnswers: ["", ""], isEditorInvoked: true });
-    quizInfo.updateQuestionsTemplateHandler();
+    quizInfo.onUpdateQuestionsTemplate();
 }
 
 export function onChange(event, questionData) {
@@ -43,11 +44,15 @@ export async function onSave(questionData, updateQuestionTemplateHandler) {
 
         const objectId = questionData.objectId;
 
-        const response = objectId
-            ? await editQuestionData(quizInfo.quizId, objectId, questionDataToSave)
-            : await createQuestion(quizInfo.quizId, questionDataToSave);
+        if (objectId !== undefined) {
+            await editQuestionData(quizInfo.quizId, objectId, questionDataToSave)
+        } else {
+            const response = await createQuestion(quizInfo.quizId, questionDataToSave);
+            await quizInfo.onUpdateQuestionsCount(1);
 
-        questionData.objectId = response.objectId || objectId;
+            questionData.objectId = response.objectId;
+        }
+        
         questionData.text = questionData.tempText;
         questionData.answers = questionData.tempAnswers;
         questionData.correctIndex = questionData.tempCorrectIndex;
@@ -76,11 +81,14 @@ export function onDelete(questionData, questionIndex, updateQuestionTemplateHand
         updateQuestionTemplateHandler();
     }
 
-    async function onAgree() {
+    async function onAgree(updateNotificationDivElement) {
         try {
+            updateNotificationDivElement(true);
+
             await deleteQuestionData(questionData.objectId);
             quizInfo.questionsData.splice(questionIndex, 1);
-            quizInfo.updateQuestionsTemplateHandler();
+            await quizInfo.onUpdateQuestionsCount();
+            quizInfo.onUpdateQuestionsTemplate();
         } catch (error) {
             alert(error.message);
         }
@@ -100,6 +108,6 @@ export function onCancel(questionData, questionIndex, updateQuestionTemplateHand
         updateQuestionTemplateHandler();
     } else {
         quizInfo.questionsData.splice(questionIndex, 1);
-        quizInfo.updateQuestionsTemplateHandler();
+        quizInfo.onUpdateQuestionsTemplate();
     }
 }

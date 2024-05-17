@@ -2,12 +2,12 @@ import { html, render } from "../../../utilities/lib.js";
 
 import { renderQuestionTemplate } from "./singleQuistion.js";
 import { onCreate, quizInfo } from "../editorFunctionalities.js";
-import { confirmActionTemplate } from "../../notifications.js";
 
-export function renderQuestionsTemplate(quizId, questionsData) {
+export function renderQuestionsTemplate(quizId, questionsData, updateQuestionTemplateHandler) {
     quizInfo.quizId = quizId;
     quizInfo.questionsData = questionsData;
-    quizInfo.updateQuestionsTemplateHandler = update;;
+    quizInfo.onUpdateQuestionsTemplate = update;
+    quizInfo.onUpdateQuestionsCount = updateQuestionTemplateHandler;
 
     const questionsDivElement = document.createElement('div');
 

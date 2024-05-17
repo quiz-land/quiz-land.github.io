@@ -1,4 +1,4 @@
-import { html } from "./../utilities/lib.js";
+import { html } from "../utilities/lib.js";
 
 export function renderBrowseView(context) {
     context.render(browseTemplate());
