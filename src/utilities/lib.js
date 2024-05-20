@@ -11,5 +11,4 @@ export {
     html,
     render,
     until,
-    //ifDefined,
 };

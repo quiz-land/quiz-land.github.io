@@ -1,30 +1,43 @@
 import * as api from './api.js';
 import { auth } from '../utilities/auth.js';
 
-const endpoint = '/classes/Quiz';
+const pathname = '/classes/Quiz';
+
+const search = {
+    quizWithQuestions: `"questionsCount":{"$gt":0}`,
+    quizesByText: (text) => `"title": {"$regex":"${text}", "$options": "i"}`, 
+    quizesByTopic: (topic) => `${topic !== 'all' ? `, "topic":"${topic}"` : ""}`, 
+    quizesCount: 'count=1',
+}
 
 export async function getQuizesCount() {
-    const queryString = JSON.stringify({ questionsCount: { "$gt": 0 } });
-    const response = await api.get(`${endpoint}?where=${queryString}&count=1`);
+    const response = await api.get(`${pathname}?where={${search.quizWithQuestions}}&${search.quizesCount}`);
     return response.count;
 }
 
 export async function getQuizesData() {
-    return api.get(endpoint);
+    const response = await api.get(`${pathname}?where={${search.quizWithQuestions}}`);
+    return response.results;
+}
+
+export async function getQuizesDataByTextAndTopic([text, topic]) {
+    const queryString = `${search.quizesByText(text)}${search.quizesByTopic(topic)}, ${search.quizWithQuestions}`;
+    const response = await api.get(`${pathname}?where={${queryString}}`);
+    return response.results;
 }
 
 export async function getQuizById(id) {
-    return api.get(`${endpoint}/${id}`);
+    return api.get(`${pathname}/${id}?include=creator&keys=title,description,topic,questionsCount,creator.username`);
 }
 
 export async function editQuizData(id, data) {
     const quizData = assembleQuizData(data);
-    return api.put(`${endpoint}/${id}`, quizData);
+    return api.put(`${pathname}/${id}`, quizData);
 }
 
 export async function createQuiz(data) {
     const quizData = assembleQuizData(data);
-    return api.post(endpoint, quizData);
+    return api.post(pathname, quizData);
 }
 
 function assembleQuizData(data) {

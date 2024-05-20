@@ -1,85 +1,74 @@
-import { html } from "../utilities/lib.js";
+import { html, until } from "../utilities/lib.js";
+
+import { getQuizesData, getQuizesDataByTextAndTopic } from "../services/quizesService.js";
+import { spinnerLoaderTemplate } from "../commonTemplates/loaders.js";
+import { quizTopics } from "../utilities/common.js";
+
+const searchFormId = 'search-form';
 
 export function renderBrowseView(context) {
-    context.render(browseTemplate());
+    context.render(browseTemplate(assembleSearchedData(context.querystring)));
+    context.registerForm(searchFormId, onSearch);
+
+    function onSearch(data) {
+        const text = `text=${data.query.trim().split(' ').join('+')}`;
+        const topic = `topic=${quizTopics[data.topic] ? `${quizTopics[data.topic].split(' ').join('+')}` : data.topic}`;
+        const queryString = encodeURI(`${text}&${topic}`);
+        context.page.redirect(`/browse/search?${queryString}`);
+    }
 }
 
-const browseTemplate = () => html`
+const browseTemplate = (searchedData) => html`
     <section id="browse">
         <header class="pad-large">
-            <form class="browse-filter">
+            <form id=${searchFormId} class="browse-filter">
                 <input class="input" type="text" name="query">
                 <select class="input" name="topic">
                     <option value="all">All Categories</option>
-                    <option value="it">Languages</option>
-                    <option value="hardware">Hardware</option>
-                    <option value="software">Tools and Software</option>
+                    ${Object.entries(quizTopics).map(([k, v]) => html`<option value=${k}>${v}</option>`)}
                 </select>
                 <input class="input submit action" type="submit" value="Filter Quizes">
             </form>
             <h1>All quizes</h1>
         </header>
-
-        <!-- <div class="pad-large alt-page async">
-            <div class="sk-cube-grid">
-                <div class="sk-cube sk-cube1"></div>
-                <div class="sk-cube sk-cube2"></div>
-                <div class="sk-cube sk-cube3"></div>
-                <div class="sk-cube sk-cube4"></div>
-                <div class="sk-cube sk-cube5"></div>
-                <div class="sk-cube sk-cube6"></div>
-                <div class="sk-cube sk-cube7"></div>
-                <div class="sk-cube sk-cube8"></div>
-                <div class="sk-cube sk-cube9"></div>
-            </div>
-        </div> -->
-
-        <div class="pad-large alt-page">
-
-            <article class="preview layout">
-                <div class="right-col">
-                    <a class="action cta" href="#">View Quiz</a>
-                </div>
-                <div class="left-col">
-                    <h3><a class="quiz-title-link" href="#">Extensible Markup Language</a></h3>
-                    <span class="quiz-topic">Topic: Languages</span>
-                    <div class="quiz-meta">
-                        <span>15 questions</span>
-                        <span>|</span>
-                        <span>Taken 54 times</span>
-                    </div>
-                </div>
-            </article>
-
-            <article class="preview layout">
-                <div class="right-col">
-                    <a class="action cta" href="#">View Quiz</a>
-                </div>
-                <div class="left-col">
-                    <h3><a class="quiz-title-link" href="#">RISC Architecture</a></h3>
-                    <span class="quiz-topic">Topic: Hardware</span>
-                    <div class="quiz-meta">
-                        <span>10 questions</span>
-                        <span>|</span>
-                        <span>Taken 107 times</span>
-                    </div>
-                </div>
-            </article>
-
-            <article class="preview layout">
-                <div class="right-col">
-                    <a class="action cta" href="#">View Quiz</a>
-                </div>
-                <div class="left-col">
-                    <h3><a class="quiz-title-link" href="#">Webpack</a></h3>
-                    <span class="quiz-topic">Topic: Tools and Software</span>
-                    <div class="quiz-meta">
-                        <span>17 questions</span>
-                        <span>|</span>
-                        <span>Taken 189 times</span>
-                    </div>
-                </div>
-            </article>
-
-        </div>
+        ${until(quizesTemplate(searchedData), spinnerLoaderTemplate())}
     </section>`;
+
+async function quizesTemplate(searchedData) {
+    const quizesData = searchedData
+        ? await getQuizesDataByTextAndTopic(searchedData)
+        : await getQuizesData();
+
+    return html`
+        <div class="pad-large alt-page">
+            ${quizesData.map(singleQuizTemplate)}
+        </div>`;
+}
+
+const singleQuizTemplate = (quizata) => html`
+    <article class="preview layout">
+        <div class="right-col">
+            <a class="action cta" href="/details/${quizata.objectId}">View Quiz</a>
+        </div>
+        <div class="left-col">
+            <h3><a class="quiz-title-link" href="/details/${quizata.objectId}">${quizata.title}</a></h3>
+            <span class="quiz-topic">Topic: ${quizata.topic}</span>
+            <div class="quiz-meta">
+                <span>${quizata.questionsCount} questions</span>
+                <span>|</span>
+                <span>Taken TODO times</span>
+            </div>
+        </div>
+    </article>`;
+
+function assembleSearchedData(querystring) {
+    if (querystring !== "") {
+        querystring = querystring.split('&')
+            .reduce((acc, qs) => {
+                acc.push(qs.split('=')[1]);
+                return acc;
+            }, []);
+    }
+
+    return querystring;
+}

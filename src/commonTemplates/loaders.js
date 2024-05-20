@@ -7,3 +7,8 @@ export const dotsLoaderTemplate = () => html`
     <div class="container-loader">
         <div class="loader"></div>
     </div>`;
+
+export const spinnerLoaderTemplate = () => html`
+    <div class="container-loader">
+        <div class="spinner-loader"></div>
+    </div>`;

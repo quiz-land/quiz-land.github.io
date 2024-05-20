@@ -1,21 +1,15 @@
-import { html } from "../utilities/lib.js";
+import { html, render } from "../utilities/lib.js";
 
+import { auth } from "../utilities/auth.js";
 import { logout } from "../services/usersServices.js";
 
-export const navigationTemplate = (hasLoggedInUser, page) => html`
-    <header id="titlebar">
-        <nav>
-            <a class="logotype" href="/"><i class="fas fa-question-circle"></i><i
-                    class="merge fas fa-check-circle"></i><span>Quiz Fever</span></a>
-            <div class="navigation">
-                <a class="nav-link" href="/browse">Browse</a>
-                ${hasLoggedInUser
-                    ? userTemplate(page)
-                    : guestTemplate()
-                }
-            </div>
-        </nav>
-    </header>`;
+export function updateNavigation(page, spanElement) {
+    const templateToRender = auth.hasLoggedInUser()
+        ? userTemplate(page)
+        : guestTemplate();
+    
+    render(templateToRender, spanElement);
+}
 
 const userTemplate = (page) => html`
     <div id="user-nav">

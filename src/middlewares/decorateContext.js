@@ -1,24 +1,19 @@
 import { render } from "./../utilities/lib.js";
 
-import { navigationTemplate } from "../commonTemplates/nav.js";
-import { auth } from "./../utilities/auth.js";
+import { updateNavigation } from "../commonTemplates/nav.js";
 
 const formsHandles = {};
 
-const headerElement = document.querySelector('header');
+const spanElement = document.getElementById('guest-or-user-nav');
 const mainElement = document.querySelector('main');
 
 export function decorateContext(context, next) {
-    renderNavgation(context.page);
+    updateNavigation(context.page, spanElement);
+
     context.render = (currentTemplate) => render(currentTemplate, mainElement);
     context.registerForm = (formId, handler) => formsHandles[formId] = handler;
-
+    
     next();
-}
-
-function renderNavgation(page) {
-    const hasLoggedInUser = auth.hasLoggedInUser();
-    render(navigationTemplate(hasLoggedInUser, page), headerElement);
 }
 
 mainElement.addEventListener('submit', (event) => {

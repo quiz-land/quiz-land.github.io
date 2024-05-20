@@ -39,10 +39,10 @@ export function renderAnswersTemplate(questionData, questionIndex) {
     }
 }
 
-const answersContainerTemplate = (questionData, questionIndex, createHandler, deleteHandler) => html`
+const answersContainerTemplate = (questionData, questionIndex, createHandler) => html`
     ${questionData.isEditorInvoked
         ? html`
-            ${questionData.tempAnswers.map((ad, i) => answerEditTemplate(questionIndex, i, i === questionData.tempCorrectIndex, ad, deleteHandler))}
+            ${questionData.tempAnswers.map((ad, i) => answerEditTemplate(questionIndex, i, i === questionData.tempCorrectIndex, ad))}
 
             <div class="editor-input">
                 <button class="input submit action" @click=${createHandler}>

@@ -32,7 +32,7 @@ export async function renderEditorView(context) {
 
             const quizData = {
                 title: data.title,
-                topic: data.topic,
+                topic: quizTopics[data.topic],
                 description: data.description,
             };
 
@@ -95,7 +95,7 @@ const formTemplate = (quizId, quizData, errorMessage, isDisabled) => html`
             <span class="label-col">Topic:</span>
             <select class="input i-med" name="topic" ?disabled=${isDisabled}>
                 <option value="all" ?selected=${quizData}>-- Select category</option>
-                ${Object.entries(quizTopics).map(([k, v]) => html`<option value=${k} ?selected=${quizData?.topic === k}>${v}</option>`)}
+                ${Object.entries(quizTopics).map(([k, v]) => html`<option value=${k} ?selected=${quizData?.topic === v}>${v}</option>`)}
             </select>
         </label><label class="editor-label layout">
             <span class="label-col">Desciption:</span>
