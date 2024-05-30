@@ -1,5 +1,5 @@
-import { createQuestion, deleteQuestionData, editQuestionData } from "../../services/questionsService.js";
-import { validateQuestionData } from "../../utilities/validations.js";
+import { createQuestion, deleteQuestionData, editQuestionData } from "../../../services/questionsService.js";
+import { validateQuestionData } from "../../../utilities/validations.js";
 
 export const quizInfo = {
     quizId: null,
@@ -45,9 +45,9 @@ export async function onSave(questionData, updateQuestionTemplateHandler) {
         const objectId = questionData.objectId;
 
         if (objectId !== undefined) {
-            await editQuestionData(quizInfo.quizId, objectId, questionDataToSave)
+            await editQuestionData(objectId, questionDataToSave, quizInfo.quizId)
         } else {
-            const response = await createQuestion(quizInfo.quizId, questionDataToSave);
+            const response = await createQuestion(questionDataToSave, quizInfo.quizId);
             await quizInfo.onUpdateQuestionsCount(1);
 
             questionData.objectId = response.objectId;
@@ -76,6 +76,8 @@ export function onEdit(questionData, updateQuestionTemplateHandler) {
 }
 
 export function onDelete(questionData, questionIndex, updateQuestionTemplateHandler) {
+    const questionText = `Are you sure want to delete Question ${questionIndex + 1}?`;
+
     function onToggle() {
         questionData.wantToDelete = !questionData.wantToDelete;
         updateQuestionTemplateHandler();
@@ -95,6 +97,7 @@ export function onDelete(questionData, questionIndex, updateQuestionTemplateHand
     }
 
     return {
+        questionText,
         onToggle,
         onAgree,
         onRefuse: onToggle,

@@ -1,5 +1,5 @@
 import * as api from './api.js';
-import { auth } from './../utilities/auth.js';
+import { auth } from '../utilities/auth.js';
 
 const endpoints = {
     REGISTER: 'users',

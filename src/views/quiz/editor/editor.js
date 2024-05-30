@@ -1,9 +1,8 @@
-import { html, render } from "./../../utilities/lib.js";
+import { html, render } from "./../../../utilities/lib.js";
 
-import { createQuiz, editQuizData, getQuizById } from "../../services/quizesService.js";
-import { getQuestionsByQuizId } from "../../services/questionsService.js";
-import { quizTopics } from "../../utilities/common.js";
-import { validateQuizData } from "../../utilities/validations.js";
+import { createQuiz, editQuizData } from "../../../services/quizesService.js";
+import { quizTopics } from "../../../utilities/common.js";
+import { validateQuizData } from "../../../utilities/validations.js";
 import { renderQuestionsTemplate } from "./questions/questions.js";
 
 const updateFormDivElement = createFormDivElement();
@@ -15,10 +14,7 @@ export async function renderEditorView(context) {
     let questionsData = [];
 
     if (quizId) {
-        [ quizData, questionsData ] = await Promise.all([
-            getQuizById(quizId),
-            getQuestionsByQuizId(quizId),
-        ]);
+        [ quizData, questionsData ] = await context.quizByIdAndItsQuestionsPromise;
     }
 
     context.render(editorTemplate(quizId, quizData, questionsData, onUpdateQuetionsCount));

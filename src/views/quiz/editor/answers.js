@@ -1,4 +1,4 @@
-import { html, render } from "../../utilities/lib.js";
+import { html, render } from "../../../utilities/lib.js";
 
 export function renderAnswersTemplate(questionData, questionIndex) {
     const answersContainerDivElement = document.createElement('div');

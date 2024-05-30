@@ -50,12 +50,33 @@
 }
 
 .details h1 {
+    margin-bottom: 15px;
+}
+
+.details h2 {
     margin-bottom: 32px;
 }
 
 .quiz-desc {
     text-align: left;
+    margin-top: 15px;
+}
+
+.retake-quiz {
     margin-top: 32px;
+}
+
+.retake-quiz span:first-of-type {
+    font-weight: bold;
+}
+
+.result-quiz {
+    margin-top: 27px;
+    font-size: 17px;
+}
+
+.result-quiz span:first-of-type {
+    font-weight: bold;
 }
 
 .question {

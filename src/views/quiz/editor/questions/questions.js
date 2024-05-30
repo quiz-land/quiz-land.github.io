@@ -1,4 +1,4 @@
-import { html, render } from "../../../utilities/lib.js";
+import { html, render } from "../../../../utilities/lib.js";
 
 import { renderQuestionTemplate } from "./singleQuistion.js";
 import { onCreate, quizInfo } from "../editorFunctionalities.js";

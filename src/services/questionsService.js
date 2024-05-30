@@ -1,5 +1,5 @@
 import * as api from './api.js';
-import { auth } from '../utilities/auth.js';
+import { addPointerData, assembleData } from './commonHelper.js';
 
 const endpoint = '/classes/Question';
 
@@ -9,36 +9,16 @@ export async function getQuestionsByQuizId(quizId) {
     return response.results;
 }
 
-export async function createQuestion(quizId, data) {
-    const questionData = assembleQuizData(quizId, data);
+export async function createQuestion(data, quizId) {
+    const questionData = assembleData(data, quizId);
     return api.post(endpoint, questionData);
 }
 
-export async function editQuestionData(quizId, id, data) {
-    const questionData = assembleQuizData(quizId, data);
+export async function editQuestionData(id, data, quizId) {
+    const questionData = assembleData(data, quizId);
     return api.put(`${endpoint}/${id}`, questionData);
 }
 
 export async function deleteQuestionData(id) {
     return api.del(`${endpoint}/${id}`);
-}
-
-function assembleQuizData(quizId, data) {
-    const loggedInUserData = auth.getLoggedInUserData();
-
-    return Object.assign(
-        {
-            quiz: addPointerData('Quiz', quizId),
-            creator: addPointerData('_User', loggedInUserData.id),
-        },
-        data
-    );
-}
-
-function addPointerData(className, objectId) {
-    return {
-        '__type': "Pointer",
-        className,
-        objectId,
-    };
 }

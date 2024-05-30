@@ -1,5 +1,5 @@
 import * as api from './api.js';
-import { auth } from '../utilities/auth.js';
+import { assembleData } from './commonHelper.js';
 
 const pathname = '/classes/Quiz';
 
@@ -30,26 +30,12 @@ export async function getQuizById(id) {
     return api.get(`${pathname}/${id}?include=creator&keys=title,description,topic,questionsCount,creator.username`);
 }
 
-export async function editQuizData(id, data) {
-    const quizData = assembleQuizData(data);
-    return api.put(`${pathname}/${id}`, quizData);
-}
-
 export async function createQuiz(data) {
-    const quizData = assembleQuizData(data);
+    const quizData = assembleData(data);
     return api.post(pathname, quizData);
 }
 
-function assembleQuizData(data) {
-    return Object.assign({ creator: addCreatorData() }, data)
-}
-
-function addCreatorData() {
-    const loggedInUserData = auth.getLoggedInUserData();
-
-    return {
-        '__type': "Pointer",
-        'className': "_User",
-        'objectId': loggedInUserData.id,
-    };
+export async function editQuizData(id, data) {
+    const quizData = assembleData(data);
+    return api.put(`${pathname}/${id}`, quizData);
 }

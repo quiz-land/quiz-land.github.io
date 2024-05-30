@@ -1,9 +1,9 @@
-import { html, render } from "../../../utilities/lib.js";
+import { html, render } from "../../../../utilities/lib.js";
 
 import { renderAnswersTemplate } from "../answers.js";
 import { onCancel, onChange, onDelete, onEdit, onSave } from "../editorFunctionalities.js";
-import { renderNotificationTemplate } from "../../../commonTemplates/notifications.js";
-import { loadingOverlayTemplate } from "../../../commonTemplates/loaders.js";
+import { renderNotificationTemplate } from "../../../../commonTemplates/notifications.js";
+import { loadingOverlayTemplate } from "../../../../commonTemplates/loaders.js";
 
 export function renderQuestionTemplate(questionData, index) {
     const questionArticleElement = document.createElement('article');
@@ -57,6 +57,6 @@ function questionPreviewTemplate(questionData, index, updateQuestionTemplateHand
         <form>
             <p class="editor-input">${questionData.text}</p>
             ${renderAnswersTemplate(questionData, index)}
-            ${questionData.wantToDelete ? renderNotificationTemplate(index, deleteHandler.onAgree, deleteHandler.onRefuse) : ""}
+            ${questionData.wantToDelete ? renderNotificationTemplate(deleteHandler) : ""}
         </form>`
 };
